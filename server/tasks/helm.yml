@@ -1,0 +1,27 @@
+---
+
+# Helm
+- name: curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+  become: yes
+  apt_key: 
+    url: https://baltocdn.com/helm/signing.asc
+    state: present
+
+- name: Install apt-transport-https
+  become: yes
+  apt:
+    name: apt-transport-https
+    state: present
+    update_cache: yes
+
+- name: echo helm
+  become: yes 
+  shell: echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+
+
+- name: Install helm
+  become: yes
+  apt:
+    name: helm
+    state: present
+    update_cache: yes

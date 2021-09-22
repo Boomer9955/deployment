@@ -11,3 +11,6 @@
 
 - name: Install kubectl
   include_tasks: tasks/kubectl.yml
+
+- name: Install helm
+  include_tasks: tasks/helm.yml
