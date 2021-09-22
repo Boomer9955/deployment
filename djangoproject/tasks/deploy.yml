@@ -1,0 +1,57 @@
+---
+
+#del old pod
+- name: delete old pod
+  shell: kubectl delete service,deployment "{{namespace}}" --namespace="{{namespace}}"
+  register: delold
+  changed_when: false
+  ignore_errors: true
+  tags: delold-pod
+
+- debug: var=delold.stdout_lines
+  tags: delold-pod
+
+#app
+- name: deploy deployment django
+  shell: kubectl create deployment "{{namespace}}" --image=boomer9955/"{{namespace}}":latest --namespace="{{namespace}}"
+  register: deploynew
+  tags: deploy
+
+- debug: var=deploynew.stdout_lines
+  tags: deploy
+
+#proxy
+- name: deploy service django
+  shell: kubectl expose deployment "{{namespace}}" --type=LoadBalancer --name="{{namespace}}"-http --port="{{portforward}}" --namespace="{{namespace}}"
+  register: deploysrv
+  tags: deploysrv
+
+- debug: var=deploysrv.stdout_lines
+  tags: deploysrv
+
+#pull image
+- name: Pull an image
+  become: yes
+  community.docker.docker_image:
+    name: boomer9955/"{{namespace}}"
+    source: pull
+  tags: pullimage
+
+#new version
+- name: deploy deployment django
+  shell: kubectl set image deployment "{{namespace}}" "{{namespace}}"=boomer9955/"{{namespace}}":"{{build_number}}" --record --namespace="{{namespace}}"
+  register: newversion
+  tags: newversion
+
+- debug: var=newversion.stdout_lines
+  tags: newversion
+
+#kill
+- name: kill process
+  become: yes
+  shell: kill -9 $(sudo lsof -t -i:"{{portforward}}")
+  register: killprocess
+  tags: killprocess
+
+- debug: var=killprocess.stdout_lines
+  tags: killprocess
