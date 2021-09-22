@@ -1,5 +1,0 @@
----
-
-- include: tasks/deploy.yml
-
-- include: tasks/start.yml

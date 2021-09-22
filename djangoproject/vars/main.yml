@@ -1,4 +1,0 @@
----
-# vars file for server
-namespace: mydjango
-portforward: 8010
