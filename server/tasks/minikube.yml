@@ -1,0 +1,23 @@
+# Minikube
+- name: Download Minikube
+  become: yes
+  get_url:
+    url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    dest: /home/{{service_name}}/minikube-linux-amd64
+    mode: 0440
+
+- name: Install Minikube
+  become: yes
+  #path: '/home/vagrant'
+  shell: "install minikube-linux-amd64 /usr/local/bin/minikube"
+  args: 
+    chdir: /home/{{service_name}}
+  register: install_minikube
+  
+- name: Debug install_minikube
+  become: yes
+  debug: 
+    var: install_minikube
+  notify:
+    - Check Minikube's status
+    - Start Minikube if it's not running

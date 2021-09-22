@@ -1,0 +1,64 @@
+---
+
+#docker_python_docker-compose
+- name: install dependencies
+  become: yes
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: yes
+
+- name: add gpg key
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: set up the repository
+  become: yes
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Upgrade all apt packages
+  become: yes
+  apt: 
+    name: aptitude 
+    state: latest 
+    force_apt_get: yes
+    purge: yes
+  
+- name: apt-get upgrade
+  become: yes
+  apt:
+    upgrade: yes
+    update_cache: yes
+    
+- name: install docker
+  become: yes 
+  shell: apt install docker-ce
+  register: shell_status
+  changed_when: false
+  ignore_errors: true
+- debug:
+    var: shell_status.stdout_lines
+
+
+#docker group
+- name: Add vagrant user to docker group
+  become: yes
+  user:
+    name: "{{service_name}}"
+    groups: docker
+    append: yes
+  notify:
+    - start kubelet
+    - Start docker on boot
+    - Check Minikube status
+    - Start Minikube

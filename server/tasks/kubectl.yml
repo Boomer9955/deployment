@@ -1,0 +1,88 @@
+# apt
+- name: apt-get upgrade
+  become: yes
+  apt:
+    upgrade: yes
+    update_cache: yes
+
+# Kubectl
+- name: curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+  become: yes
+  apt_key: 
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add a line to a file if it does not exist, without passing regexp
+  become: yes
+  lineinfile:
+    create: yes
+    path: /etc/apt/sources.list.d/kubernetes.list
+    line: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+
+- name: apt-get update
+  become: yes
+  apt: 
+    update_cache: yes
+
+- name: Install packages
+  become: yes
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - kubectl
+#kubeadm
+- name: Install kubeadm
+  become: yes
+  apt:
+    name: kubeadm
+    state: present
+    update_cache: yes
+#kubelet
+- name: Install kubelet
+  become: yes
+  apt:
+    name: kubelet
+    state: present
+    update_cache: yes
+
+- name: enable kubectl autocompletion
+  become: yes
+  lineinfile:
+    path: /home/{{service_name}}/.bashrc
+    line: source <(kubectl completion bash)
+    insertafter: EOF
+
+- name: enable kubectl alias
+  become: yes
+  lineinfile:
+    path: /home/{{service_name}}/.bashrc
+    line: alias k="kubectl"
+    insertafter: EOF
+#git
+- name: Install git-all
+  become: yes
+  apt:
+    name: git-all
+    state: present
+    update_cache: yes
+
+#kubens
+- name: install kubens
+  become: yes 
+  shell: set -x; cd "$(mktemp -d)" && curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz" && tar zxvf krew.tar.gz && KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/arm.*$/arm/')" && "$KREW" install krew
+  register: skubensstatus
+  changed_when: false
+  ignore_errors: true
+- debug:
+    var: skubensstatus.stdout_lines
+
+- name: path
+  become: yes 
+  shell: export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+  register: pathup
+  changed_when: false
+  ignore_errors: true
+- debug:
+    var: pathup.stdout_lines
