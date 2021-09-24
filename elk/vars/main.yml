@@ -1,0 +1,5 @@
+---
+
+helm_chart_url: "https://Helm.elastic.co"
+
+namespace: elk

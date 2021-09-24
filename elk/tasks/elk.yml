@@ -1,0 +1,49 @@
+---
+
+- name: Add helm repo
+  kubernetes.core.helm_repository:
+    name: elastic
+    repo_url: "{{ helm_chart_url }}"
+
+
+- name: curl elasticsearch
+  become: yes
+  apt_key: 
+    url: https://raw.githubusercontent.com/elastic/Helm-charts/master/elasticsearch/examples/minikube/values.yaml
+    state: present
+
+
+- name: new namespace
+  shell: kubectl create namespace {{namespace}}
+  register: newns
+
+- debug: var=newns.stdout_lines
+
+
+- name: Install elasticsearch Chart
+  kubernetes.core.helm:
+    name: elasticsearch
+    namespace: {{namespace}}
+    chart_ref: elastic/elasticsearch -f ./values.yaml
+  register: elasticsearch
+
+- debug: var=elasticsearch.stdout_lines
+
+
+- name: Install kibana Chart
+  kubernetes.core.helm:
+    name: kibana
+    namespace: {{namespace}}
+    chart_ref: elastic/kibana
+  register: kibana
+
+- debug: var=kibana.stdout_lines
+
+- name: Install metricbeat Chart
+  kubernetes.core.helm:
+    name: metricbeat
+    namespace: {{namespace}}
+    chart_ref: elastic/metricbeat
+  register: metricbeat
+
+- debug: var=metricbeat.stdout_lines
