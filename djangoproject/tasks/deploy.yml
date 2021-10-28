@@ -13,8 +13,7 @@
 
 #app
 - name: deploy deployment django
-  shell: ls /home
-  #shell: kubectl create deployment "{{namespace}}" --image=boomer9955/"{{namespace}}":"{{build_number}}" --namespace="{{namespace}}"
+  shell: kubectl create deployment "{{namespace}}" --image=boomer9955/"{{namespace}}":"{{build_number}}" --namespace="{{namespace}}"
   register: deploynew
   tags: deploy
 
