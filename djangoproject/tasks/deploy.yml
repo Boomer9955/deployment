@@ -13,7 +13,7 @@
 
 #app
 - name: deploy deployment django
-  shell: /home/vagrant/test.sh pi dor
+  shell: /home/vagrant/test.sh "{{ params }}"
   #shell: kubectl create deployment "{{namespace}}" --image=boomer9955/"{{namespace}}":"{{build_number}}" --namespace="{{namespace}}"
   register: deploynew
   tags: deploy
