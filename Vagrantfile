@@ -8,8 +8,8 @@ Vagrant.configure("2") do |config|
         bionic.vm.box = "bento/ubuntu-20.04"
         bionic.vm.network :public_network, ip: "192.168.31.130", bridge: "Realtek Gaming 2.5GbE Family Controller"
         bionic.vm.provider "virtualbox" do |bionicv|
-          bionicv.memory = 4096
-          bionicv.cpus = 4
+          bionicv.memory = 8096
+          bionicv.cpus = 6
         end
     end
     #shell command
