@@ -1,6 +1,6 @@
 ---
 # vars file for server
-namespace: mydjango
+namespace: "{{name_space}}"
 portforward: 8010
 path_sc: /home/vagrant/metricbeat
 script: test
