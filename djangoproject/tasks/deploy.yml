@@ -13,8 +13,7 @@
 
 #app
 - name: deploy deployment django
-  shell: bash "{{ path_sc }}"/"{{ script }}".sh "{{sc_param}}"
-  #shell: kubectl create deployment "{{namespace}}" --image=boomer9955/"{{namespace}}":"{{build_number}}" --namespace="{{namespace}}"
+  shell: kubectl create deployment "{{namespace}}" --image=boomer9955/"{{namespace}}":"{{build_number}}" --namespace="{{namespace}}"
   register: deploynew
   tags: deploy
 
@@ -56,3 +55,13 @@
 
 - debug: var=killprocess.stdout_lines
   tags: killprocess
+
+#Helm 
+- name: deploy deployment django
+  shell: helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
+  register: helminstall
+  tags: helminstall
+
+- debug: var=helminstall.stdout_lines
+  tags: helminstall
+
