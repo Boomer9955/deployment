@@ -15,8 +15,8 @@ dir("${WORKSPACE}/config"){
 stage('Building and push'){
     if(newimages.toBoolean()){
         dir("${WORKSPACE}/project"){
-            git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlapp", branch: 'djangopostgresql'
-            dir("${WORKSPACE}/project/djangopostgres"){
+            git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlapp", branch: 'djangosql'
+            dir("${WORKSPACE}/project/djangosql/proger"){
                 sh "ls -al"
                 dockerImage = docker.build registry + ":${BUILD_NUMBER}"
                 docker.withRegistry( '', env.registryCredential){
