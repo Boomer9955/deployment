@@ -32,7 +32,7 @@ stage('server'){
     dir("${WORKSPACE}/config"){
         withCredentials([sshUserPrivateKey(credentialsId: 'myserverdjango', keyFileVariable: 'keyansible', passphraseVariable: '', usernameVariable: 'vagrant')]) {
             withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
-                sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} sc_param=${sc_param}" yml/django.yml --tags ${tags}"""
+                sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword}" yml/django.yml --tags ${tags}"""
             }
         }
     }
