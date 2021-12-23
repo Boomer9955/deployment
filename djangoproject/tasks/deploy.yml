@@ -67,11 +67,12 @@
 - debug: var=helmanipulations.stdout_lines
   tags: helmanipulations
 
-#Otherwise will start minikube
-- name: Start Minikube
+#Otherwise will helm command
+- name: Start helm command
   become: yes
   command: helm "{{helm_command}}" --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
   when: "not helmanipulations.stdout or 'running' not in helmanipulations.stdout"
+  register: helmOtherwise
   tags: helmOtherwise
 
 - debug: var=helmOtherwise.stdout_lines
