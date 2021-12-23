@@ -56,22 +56,18 @@
 - debug: var=killprocess.stdout_lines
   tags: killprocess
 
-#Helm 
+#Helm install repo
+- name: deploy deployment django
+  shell: helm install --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
+  register: helminstall
+  tags: helminstall
+
+- debug: var=helminstall.stdout_lines
+  tags: helminstall
+
+#helm command
 - name: deploy deployment django
   shell: helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
-  register: helmanipulations
-  changed_when: false
-  ignore_errors: true
-  tags: helmanipulations
-
-- debug: var=helmanipulations.stdout_lines
-  tags: helmanipulations
-
-#Otherwise will helm command
-- name: Start helm command
-  become: yes
-  command: helm "{{helm_command}}" --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
-  when: "not helmanipulations.stdout or 'running' not in helmanipulations.stdout"
   register: helmOtherwise
   tags: helmOtherwise
 
