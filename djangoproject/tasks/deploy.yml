@@ -59,9 +59,20 @@
 #Helm 
 - name: deploy deployment django
   shell: helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
-  register: helminstall
-  tags: helminstall
+  register: helmanipulations
+  changed_when: false
+  ignore_errors: true
+  tags: helmanipulations
 
-- debug: var=helminstall.stdout_lines
-  tags: helminstall
+- debug: var=helmanipulations.stdout_lines
+  tags: helmanipulations
 
+#Otherwise will start minikube
+- name: Start Minikube
+  become: yes
+  command: helm "{{helm_command}}" --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
+  when: "not helmanipulations.stdout or 'running' not in helmanipulations.stdout"
+  tags: helmOtherwise
+
+- debug: var=helmOtherwise.stdout_lines
+  tags: helmOtherwise
