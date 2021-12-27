@@ -39,10 +39,12 @@ if(vHelmChart.toBoolean()){
             dir("${WORKSPACE}/chart/prdjango"){
                 sh "ls -al"
                 sh "pwd"
-                def read = readYaml file: "Chart.yaml"
-                read.version=${BUILD_NUMBER}
-                read.appVersion=${BUILD_NUMBER}
-                writeYaml file: "Chart.yaml", data: read
+                def filename = "Chart.yaml"
+                def read = readYaml file: "$filename"
+                read.version="${BUILD_NUMBER}"
+                read.appVersion="${BUILD_NUMBER}"
+                sh "rm $filename"
+                writeYaml file: "$filename", data: read
                 println "${read}"
             }
         }
