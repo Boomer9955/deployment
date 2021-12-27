@@ -58,8 +58,8 @@ stage('New version Helm chart'){
         dir("${WORKSPACE}/chart_gh-pages"){
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'gh-pages'
             withCredentials([usernamePassword(credentialsId: 'helmchart', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
-                sh "cr upload -o ${gitlogin} -r helmcharts -p ${WORKSPACE}/chart_main/deploy -t ${gitpass}"
-                sh "cr index -o ${gitlogin} --charts-repo https://boomer9955.github.io/helmcharts/ --git-repo helmcharts --package-path .deploy --token ${gitpass} -i index.yaml"
+                sh "cr upload -o ${gitlogin} -r helmcharts -p ${WORKSPACE}/chart_main/.deploy -t ${gitpass}"
+                sh "cr index -o ${gitlogin} --charts-repo https://boomer9955.github.io/helmcharts/ --git-repo helmcharts --package-path ${WORKSPACE}/chart_main/.deploy --token ${gitpass} -i index.yaml"
                 sh """ git config --global user.email '<>' && git config --global user.name 'Jenkins Jobs'"""
                 sh """git add * && git commit -m '${BUILD_NUMBER}'"""
                 sh """ git push https://${gitlogin}:${gitpass}@github.com/Boomer9955/helmcharts.git gh-pages:gh-pages"""
