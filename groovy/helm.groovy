@@ -50,9 +50,11 @@ stage('New version Helm chart'){
             }
             sh "helm package prdjango/ --destination .deploy"
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'gh-pages'
-            withCredentials([usernamePassword(credentialsId: 'mygit', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
+            withCredentials([usernamePassword(credentialsId: 'helmchart', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
                 sh "cr upload -o ${gitlogin} -r helmcharts -p .deploy -t ${gitpass}"
                 sh "cr index -o ${gitlogin} --charts-repo https://boomer9955.github.io/helmcharts/ --git-repo helmcharts --package-path .deploy --token ${gitpass} -i index.yaml"
+                sh """git add * && git commit -m '${BUILD_NUMBER}'"""
+                sh """ git push $env.urlchart"""
             }
         }
     }
