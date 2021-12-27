@@ -53,6 +53,7 @@ stage('New version Helm chart'){
             withCredentials([usernamePassword(credentialsId: 'credgitc', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
                 sh "cr upload -o ${gitlogin} -r helmcharts -p .deploy -t ${gitpass}"
                 sh "cr index -o ${gitlogin} --charts-repo https://boomer9955.github.io/helmcharts/ --git-repo helmcharts --package-path .deploy --token ${gitpass} -i index.yaml"
+            }
         }
     }
 }
