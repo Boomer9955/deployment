@@ -47,7 +47,6 @@ stage('New version Helm chart'){
                 sh "rm $filename"
                 writeYaml file: "$filename", data: read
                 println "${read}"
-                deleteDir()
             }
         }
     }
