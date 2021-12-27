@@ -33,8 +33,7 @@ stage('Building and push'){
     }
 }
 
-stage('Building and push'){
-    if(vHelmChart.toBoolean()){
+if(vHelmChart.toBoolean()){
         dir("${WORKSPACE}/chart"){
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'main'
             dir("${WORKSPACE}/chart/helmcharts/prdjango"){
@@ -46,9 +45,7 @@ stage('Building and push'){
                 println "${read}"
             }
         }
-    }
 }
-
 
 stage('server'){
     dir("${WORKSPACE}/config"){
