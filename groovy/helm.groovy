@@ -6,6 +6,7 @@ dockerImage = ''
 env.credgitc='mygit'
 env.urlapp='https://github.com/Boomer9955/myprojects.git'
 env.urlconf='https://github.com/Boomer9955/deployment.git'
+env.urlchart='https://github.com/Boomer9955/helmcharts.git'
 
 
 dir("${WORKSPACE}/config"){
@@ -27,6 +28,23 @@ stage('Building and push'){
         }
     }
 }
+
+stage('Building and push'){
+    if(+vHelmChart.toBoolean()){
+        dir("${WORKSPACE}/chart"){
+            git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'main'
+            dir("${WORKSPACE}/chart/helmcharts/prdjango"){
+                sh "ls -al"
+                def read = readYaml file: "Chart.yaml"
+                read.version=${BUILD_NUMBER}
+                read.appVersion=${BUILD_NUMBER}
+                writeYaml file: "Chart.yaml", data: read
+                println "${read}"
+            }
+        }
+    }
+}
+
 
 stage('server'){
     dir("${WORKSPACE}/config"){
