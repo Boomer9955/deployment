@@ -33,7 +33,8 @@ stage('Building and push'){
     }
 }
 
-if(vHelmChart.toBoolean()){
+stage('New version Helm chart'){
+    if(vHelmChart.toBoolean()){
         dir("${WORKSPACE}/chart"){
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'main'
             dir("${WORKSPACE}/chart/prdjango"){
@@ -46,8 +47,10 @@ if(vHelmChart.toBoolean()){
                 sh "rm $filename"
                 writeYaml file: "$filename", data: read
                 println "${read}"
+                deleteDir()
             }
         }
+    }
 }
 
 stage('server'){
