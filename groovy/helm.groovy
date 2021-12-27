@@ -4,6 +4,8 @@ import groovy.yaml.*
 import groovy.*
 import org.yaml.snakeyaml.Yaml
 
+@Library('piper-lib-os') _
+
 registry = "boomer9955/mydjango"
 env.registryCredential = 'dockerhub'
 dockerImage = ''
