@@ -35,26 +35,32 @@ stage('Building and push'){
 
 stage('New version Helm chart'){
     if(vHelmChart.toBoolean()){
-        dir("${WORKSPACE}/chart"){
+        dir("${WORKSPACE}/chart_main"){
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'main'
-            dir("${WORKSPACE}/chart/prdjango"){
-                sh "ls -al"
-                sh "pwd"
-                def filename = "Chart.yaml"
-                def read = readYaml file: "$filename"
-                read.version="${BUILD_NUMBER}"
-                read.appVersion="${BUILD_NUMBER}"
-                sh "rm $filename"
-                writeYaml file: "$filename", data: read
-                println "${read}"
+            withCredentials([usernamePassword(credentialsId: 'helmchart', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
+                dir("${WORKSPACE}/chart_main/prdjango"){
+                    sh "ls -al"
+                    sh "pwd"
+                    def filename = "Chart.yaml"
+                    def read = readYaml file: "$filename"
+                    read.version="${BUILD_NUMBER}"
+                    read.appVersion="${BUILD_NUMBER}"
+                    sh "rm $filename"
+                    writeYaml file: "$filename", data: read
+                    println "${read}"
+                }
+                sh "helm package prdjango/ --destination .deploy"
+                sh """git add * && git commit -m '${BUILD_NUMBER}'"""
+                sh """ git push https://${gitlogin}:${gitpass}@github.com/Boomer9955/helmcharts.git main:main"""
             }
-            sh "helm package prdjango/ --destination .deploy"
+        }
+        dir("${WORKSPACE}/chart_gh-pages"){
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'gh-pages'
             withCredentials([usernamePassword(credentialsId: 'helmchart', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
-                sh "cr upload -o ${gitlogin} -r helmcharts -p .deploy -t ${gitpass}"
+                sh "cr upload -o ${gitlogin} -r helmcharts -p ${WORKSPACE}/chart_main/deploy -t ${gitpass}"
                 sh "cr index -o ${gitlogin} --charts-repo https://boomer9955.github.io/helmcharts/ --git-repo helmcharts --package-path .deploy --token ${gitpass} -i index.yaml"
                 sh """git add * && git commit -m '${BUILD_NUMBER}'"""
-                sh """ git push $env.urlchart"""
+                sh """ git push https://${gitlogin}:${gitpass}@github.com/Boomer9955/helmcharts.git gh-pages:gh-pages"""
             }
         }
     }
