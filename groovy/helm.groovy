@@ -33,6 +33,10 @@ stage('Building and push'){
     }
 }
 
+dir("${WORKSPACE}"){
+    deleteDir()
+}
+
 stage('New version Helm chart'){
     if(vHelmChart.toBoolean()){
         dir("${WORKSPACE}/chart_main"){
@@ -77,10 +81,12 @@ stage('server'){
                 sh "helm repo add helmcharts https://boomer9955.github.io/helmcharts/"
                 sh "helm search repo helmcharts"
                 sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
-                deleteDir()
             }
         }
     }
 }
 
 
+dir("${WORKSPACE}"){
+    deleteDir()
+}
