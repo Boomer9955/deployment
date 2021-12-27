@@ -76,7 +76,8 @@ stage('server'){
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
                     sh "helm repo add helmcharts https://boomer9955.github.io/helmcharts/"
                     sh "helm search repo helmcharts"
-                    if (sh "helm search repo mydjango --version '${BUILD_NUMBER}'"){
+                    versionhelm = sh "helm search repo mydjango --version '${BUILD_NUMBER}'"
+                    if (versionhelm){
                         sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
                     }else{
                         println "No version ${BUILD_NUMBER}"
