@@ -36,8 +36,9 @@ stage('Building and push'){
 if(vHelmChart.toBoolean()){
         dir("${WORKSPACE}/chart"){
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'main'
-            dir("${WORKSPACE}/chart/helmcharts/prdjango"){
+            dir("${WORKSPACE}/chart/prdjango"){
                 sh "ls -al"
+                sh "pwd"
                 def read = readYaml file: "Chart.yaml"
                 read.version=${BUILD_NUMBER}
                 read.appVersion=${BUILD_NUMBER}
