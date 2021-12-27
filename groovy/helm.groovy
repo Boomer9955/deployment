@@ -1,6 +1,8 @@
 #!/usr/bin/env groovy
 import groovy.json.*
 import groovy.yaml.*
+import groovy.*
+import org.yaml.snakeyaml.Yaml
 
 registry = "boomer9955/mydjango"
 env.registryCredential = 'dockerhub'
