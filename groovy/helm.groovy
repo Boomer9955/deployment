@@ -12,6 +12,9 @@ env.urlapp='https://github.com/Boomer9955/myprojects.git'
 env.urlconf='https://github.com/Boomer9955/deployment.git'
 env.urlchart='https://github.com/Boomer9955/helmcharts.git'
 
+dir("${WORKSPACE}"){
+    deleteDir()
+}
 
 dir("${WORKSPACE}/config"){
     git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlconf", branch: 'application'
@@ -31,10 +34,6 @@ stage('Building and push'){
             }
         }
     }
-}
-
-dir("${WORKSPACE}"){
-    deleteDir()
 }
 
 stage('New version Helm chart'){
