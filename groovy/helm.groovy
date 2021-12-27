@@ -48,9 +48,16 @@ stage('New version Helm chart'){
                 writeYaml file: "$filename", data: read
                 println "${read}"
             }
+            sh "helm package prdjango/ --destination .deploy"
+            git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'gh-pages'
+            withCredentials([usernamePassword(credentialsId: 'credgitc', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
+                sh "cr upload -o ${gitlogin} -r helmcharts -p .deploy -t ${gitpass}"
+                sh "cr index -o ${gitlogin} --charts-repo https://boomer9955.github.io/helmcharts/ --git-repo helmcharts --package-path .deploy --token ${gitpass} -i index.yaml"
         }
     }
 }
+
+
 
 stage('server'){
     dir("${WORKSPACE}/config"){
@@ -62,3 +69,5 @@ stage('server'){
         }
     }
 }
+
+
