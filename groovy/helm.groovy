@@ -7,6 +7,7 @@ env.credgitc='mygit'
 env.urlapp='https://github.com/Boomer9955/myprojects.git'
 env.urlconf='https://github.com/Boomer9955/deployment.git'
 env.urlchart='https://github.com/Boomer9955/helmcharts.git'
+env.chart_name='https://boomer9955.github.io/helmcharts/'
 
 dir("${WORKSPACE}"){
     deleteDir()
@@ -74,11 +75,12 @@ stage('server'){
     dir("${WORKSPACE}/config"){
         withCredentials([sshUserPrivateKey(credentialsId: 'myserverdjango', keyFileVariable: 'keyansible', passphraseVariable: '', usernameVariable: 'vagrant')]) {
             withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
-                sh "helm repo add helmcharts https://boomer9955.github.io/helmcharts/"
+                sh "helm repo add helmcharts $chart_name"
+                sh "helm repo update"
                 sh "helm search repo helmcharts"
-                versionhelm = sh "helm search repo mydjango --version '${BUILD_NUMBER}'"
                 count = 0
                 while(count<5) {
+                    versionhelm = sh "helm search repo mydjango --version '${BUILD_NUMBER}'"
                     if (versionhelm){
                         sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
                         break
