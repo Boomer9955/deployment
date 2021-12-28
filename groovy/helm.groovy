@@ -76,10 +76,10 @@ stage('server'){
         withCredentials([sshUserPrivateKey(credentialsId: 'myserverdjango', keyFileVariable: 'keyansible', passphraseVariable: '', usernameVariable: 'vagrant')]) {
             withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
                 sh "helm repo add helmcharts $chart_name"
-                sh "helm repo update"
-                sh "helm search repo helmcharts"
                 count = 0
                 while(count<5) {
+                    sh "helm repo update"
+                    sh "helm search repo helmcharts"
                     versionhelm = sh "helm search repo mydjango --version '${BUILD_NUMBER}'"
                     if (versionhelm){
                         sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
