@@ -84,7 +84,7 @@ stage('server'){
                             break
                         }else{
                             timeout(time: 60, unit: 'SECONDS') {
-                                println "Wait"
+                                count++
                             }
                         }
                     }
