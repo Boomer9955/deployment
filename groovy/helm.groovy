@@ -77,10 +77,16 @@ stage('server'){
                     sh "helm repo add helmcharts https://boomer9955.github.io/helmcharts/"
                     sh "helm search repo helmcharts"
                     versionhelm = sh "helm search repo mydjango --version '${BUILD_NUMBER}'"
-                    if (versionhelm){
-                        sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
-                    }else{
-                        println "No version ${BUILD_NUMBER}"
+                    count = 0
+                    while(count<5) {
+                        if (versionhelm){
+                            sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
+                            break
+                        }else{
+                            timeout(time: 60, unit: 'SECONDS') {
+                                println "Wait"
+                            }
+                        }
                     }
                 }
             }
