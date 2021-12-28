@@ -58,7 +58,7 @@
 
 #Helm install repo
 - name: deploy deployment django
-  shell: helm install --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
+  shell: helm repo update | helm search repo helmcharts | helm install --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
   register: helminstall
   tags: helminstall
 
@@ -67,7 +67,7 @@
 
 #helm command
 - name: deploy deployment django
-  shell: helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
+  shell: helm repo update | helm search repo helmcharts | helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
   register: helmOtherwise
   tags: helmOtherwise
 
