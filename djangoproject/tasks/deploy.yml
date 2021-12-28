@@ -57,8 +57,8 @@
   tags: killprocess
 
 #Helm install repo
-- name: deploy deployment django
-  shell: helm repo update | helm search repo helmcharts | helm install --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
+- name: Helm install repo
+  shell: helm repo update | helm search repo  | helm install --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
   register: helminstall
   tags: helminstall
 
@@ -66,8 +66,8 @@
   tags: helminstall
 
 #helm command
-- name: deploy deployment django
-  shell: helm repo update | helm search repo helmcharts | helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
+- name: helm command "{{helm_command}}"
+  shell: helm repo update | helm search repo  | helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
   register: helmOtherwise
   tags: helmOtherwise
 
