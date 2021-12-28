@@ -70,26 +70,24 @@ stage('New version Helm chart'){
 
 
 stage('server'){
-    timeout(time: 30, unit: 'SECONDS') {
-        dir("${WORKSPACE}/config"){
-            withCredentials([sshUserPrivateKey(credentialsId: 'myserverdjango', keyFileVariable: 'keyansible', passphraseVariable: '', usernameVariable: 'vagrant')]) {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
-                    sh "helm repo add helmcharts https://boomer9955.github.io/helmcharts/"
-                    sh "helm search repo helmcharts"
-                    versionhelm = sh "helm search repo mydjango --version '${BUILD_NUMBER}'"
-                    count = 0
-                    while(count<5) {
-                        if (versionhelm){
-                            sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
-                            break
-                        }else{
-                            timeout(time: 60, unit: 'SECONDS') {
-                                count++
-                            }
-                        }
+    sleep 60
+    dir("${WORKSPACE}/config"){
+        withCredentials([sshUserPrivateKey(credentialsId: 'myserverdjango', keyFileVariable: 'keyansible', passphraseVariable: '', usernameVariable: 'vagrant')]) {
+            withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
+                sh "helm repo add helmcharts https://boomer9955.github.io/helmcharts/"
+                sh "helm search repo helmcharts"
+                versionhelm = sh "helm search repo mydjango --version '${BUILD_NUMBER}'"
+                count = 0
+                while(count<5) {
+                    if (versionhelm){
+                        sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
+                        break
+                    }else{
+                        sleep 60
+                        count++
                     }
                 }
-            }
+           }
         }
     }
 }
