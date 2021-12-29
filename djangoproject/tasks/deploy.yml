@@ -67,7 +67,8 @@
 
 #helm command
 - name: helm command "{{helm_command}}"
-  shell: helm repo update | helm search repo  | helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
+  shell: |
+    helm repo update && helm search repo && helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
   register: helmOtherwise
   tags: helmOtherwise
 
