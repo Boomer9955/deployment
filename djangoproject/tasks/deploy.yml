@@ -58,7 +58,8 @@
 
 #Helm install repo
 - name: Helm install repo
-  shell: helm repo update | helm search repo  | helm install --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
+  shell: | 
+    helm repo update && helm search repo && helm install --namespace "{{namespace}}" --create-namespace "{{namespace}}" helmcharts/"{{namespace}}"
   register: helminstall
   tags: helminstall
 
