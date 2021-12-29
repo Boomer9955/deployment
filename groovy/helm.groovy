@@ -61,13 +61,17 @@ stage('New version Helm chart'){
                 }
                 // create helmchart
                 sh "helm package prdjango/ --destination .deploy"
-                // values меняем обратно
-                def values_o = "values.yaml"
-                def values_back = readYaml file: "$values_o"
-                values_back.secret_key="1"
-                sh "rm $values_o"
-                writeYaml file: "$values_o", data: values_back
-                println "${values_back}"
+                dir("${WORKSPACE}/chart_main/prdjango"){
+                    // values меняем обратно
+                    sh "ls -al"
+                    sh "pwd"
+                    def values_o = "values.yaml"
+                    def values_back = readYaml file: "$values_o"
+                    values_back.secret_key="1"
+                    sh "rm $values_o"
+                    writeYaml file: "$values_o", data: values_back
+                    println "${values_back}"
+                }
                 // Push
                 sh """ git config --global user.email '<>' && git config --global user.name 'Jenkins Jobs'"""
                 sh """git add * && git commit -m '${BUILD_NUMBER}'"""
