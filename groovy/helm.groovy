@@ -41,20 +41,32 @@ stage('New version Helm chart'){
                 dir("${WORKSPACE}/chart_main/prdjango"){
                     sh "ls -al"
                     sh "pwd"
-                    def filename = "Chart.yaml"
-                    def read = readYaml file: "$filename"
-                    read.version="${BUILD_NUMBER}"
-                    read.appVersion="${BUILD_NUMBER}"
-                    sh "rm $filename"
-                    writeYaml file: "$filename", data: read
-                    println "${read}"
+                    // Chart изменения
+                    def chart_f = "Chart.yaml"
+                    def chart_read = readYaml file: "$chart_f"
+                    chart_read.version="${BUILD_NUMBER}"
+                    chart_read.appVersion="${BUILD_NUMBER}"
+                    sh "rm $chart_f"
+                    writeYaml file: "$chart_f", data: chart_read
+                    println "${chart_read}"
+                    // values изменения
+                    withCredentials([string(credentialsId: 'secret_django', variable: 'SECRET')]) {
+                        def values_f = "values.yaml"
+                        def values_read = readYaml file: "$values_f"
+                        values_read.secret_key="${SECRET}"
+                        sh "rm $values_f"
+                        writeYaml file: "$values_f", data: values_read
+                        println "${values_read}"
+                    }
                 }
+                // create helmchart
                 sh "helm package prdjango/ --destination .deploy"
                 sh """ git config --global user.email '<>' && git config --global user.name 'Jenkins Jobs'"""
                 sh """git add * && git commit -m '${BUILD_NUMBER}'"""
                 sh """ git push https://${gitlogin}:${gitpass}@github.com/Boomer9955/helmcharts.git main:main"""
             }
         }
+        // create and push helmchart
         dir("${WORKSPACE}/chart_gh-pages"){
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'gh-pages'
             withCredentials([usernamePassword(credentialsId: 'helmchart', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
