@@ -99,11 +99,12 @@ stage('server'){
             withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
                 sh "helm repo add helmcharts $chart_name"
                 if (RollbackHelmV){
+                    sh "helm history $NameSpace"
                     def userInput = input(id: 'Proceed1', message: 'Подтверждение отката',  parameters: [[$class: 'StringParameterDefinition', name: 'myparam', defaultValue: '']])
                     echo 'userInput: ' + userInput
                     
                     if(userInput == "$userInput") {
-                        println "$userInput"
+                        sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} VERSIONROLLBACK=${userInput}" yml/django.yml --tags rollbackHelm"""
                     } else {
                         echo "Action was aborted."
                     }
