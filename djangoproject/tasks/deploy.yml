@@ -71,7 +71,7 @@
   shell: |
     {{ script_string }}
   args:
-    executable: /bin/bash 
+    executable: /bin/helm 
   register: CommandHelm
   tags: CommandHelm
 
