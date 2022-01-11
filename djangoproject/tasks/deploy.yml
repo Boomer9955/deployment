@@ -77,9 +77,9 @@
   tags: CommandHelm
 
 #helm rollback
-- name: helm rollback "{{helm_rollback}}"
+- name: helm rollback
   shell: |
-    helm repo update && helm search repo && helm "{{helm_rollback}}" --namespace "{{namespace}}" "{{namespace}}" "{{number_release}}"
+    helm repo update && helm search repo && helm rollback --namespace "{{namespace}}" "{{namespace}}" "{{number_release}}"
   register: rollbackHelm
   tags: rollbackHelm
 
