@@ -116,7 +116,7 @@ stage('server'){
                         r = sh script: "helm search repo mydjango --version '${BUILD_NUMBER}' | grep '${BUILD_NUMBER}'", returnStatus: true
                         println "$r"
                         if (r == 0){
-                            sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} script_string="${helm_command}" name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
+                            sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} script_string=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
                             break
                         }else{
                             sleep 30
