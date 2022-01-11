@@ -70,8 +70,18 @@
 - name: helm command "{{helm_command}}"
   shell: |
     helm repo update && helm search repo && helm "{{helm_command}}" --namespace "{{namespace}}" "{{namespace}}" helmcharts/"{{namespace}}"
-  register: helmOtherwise
-  tags: helmOtherwise
+  register: CommandHelm
+  tags: CommandHelm
 
-- debug: var=helmOtherwise.stdout_lines
-  tags: helmOtherwise
+- debug: var=CommandHelm.stdout_lines
+  tags: CommandHelm
+
+#helm rollback
+- name: helm rollback "{{helm_rollback}}"
+  shell: |
+    helm repo update && helm search repo && helm "{{helm_rollback}}" --namespace "{{namespace}}" "{{namespace}}" "{{number_release}}"
+  register: rollbackHelm
+  tags: rollbackHelm
+
+- debug: var=rollbackHelm.stdout_lines
+  tags: rollbackHelm
