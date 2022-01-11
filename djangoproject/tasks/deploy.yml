@@ -70,6 +70,8 @@
 - name: helm command
   shell: |
     {{ script_string }}
+  args:
+    executable: /bin/helm
   register: CommandHelm
   tags: CommandHelm
 
