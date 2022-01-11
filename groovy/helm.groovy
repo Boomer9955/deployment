@@ -98,17 +98,28 @@ stage('server'){
     dir("${WORKSPACE}/config"){
         withCredentials([sshUserPrivateKey(credentialsId: 'myserverdjango', keyFileVariable: 'keyansible', passphraseVariable: '', usernameVariable: 'vagrant')]) {
             withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
-                 sh "helm repo add helmcharts $chart_name"
-                for(i=0;i<5;i++) {
-                    sh "helm repo update"
-                    sh "helm search repo helmcharts"
-                    r = sh script: "helm search repo mydjango --version '${BUILD_NUMBER}' | grep '${BUILD_NUMBER}'", returnStatus: true
-                    println "$r"
-                    if (r == 0){
-                        sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
-                        break
-                    }else{
-                        sleep 30
+                sh "helm repo add helmcharts"
+                if (RollbackHelmV){
+                    def userInput = input(id: 'Proceed1', message: 'Подтверждение отката',  parameters: [[$class: 'StringParameterDefinition', name: 'myparam', defaultValue: '']])
+                    echo 'userInput: ' + userInput
+                    
+                    if(userInput == "$userInput") {
+                        println "$userInput"
+                    } else {
+                        echo "Action was aborted."
+                    }
+                }else{
+                    for(i=0;i<5;i++) {
+                        sh "helm repo update"
+                        sh "helm search repo helmcharts"
+                        r = sh script: "helm search repo mydjango --version '${BUILD_NUMBER}' | grep '${BUILD_NUMBER}'", returnStatus: true
+                        println "$r"
+                        if (r == 0){
+                            sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} helm_command=${helm_command} name_space=${NameSpace}" yml/django.yml --tags ${tags}"""
+                            break
+                        }else{
+                            sleep 30
+                        }
                     }
                 }
             }
