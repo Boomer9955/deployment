@@ -67,11 +67,9 @@
   tags: helminstall
 
 #helm command
-- name: helm command "{{helm_command}}"
+- name: helm command
   shell: |
     {{ script_string }}
-  args:
-    executable: /bin/helm
   register: CommandHelm
   tags: CommandHelm
 
