@@ -69,7 +69,9 @@
 #helm command
 - name: helm command "{{helm_command}}"
   shell: |
-    {{script_string}}
+    {{ script_string }}
+  args:
+    executable: /bin/bash 
   register: CommandHelm
   tags: CommandHelm
 
