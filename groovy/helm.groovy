@@ -104,7 +104,7 @@ stage('server'){
                     echo 'userInput: ' + userInput
                     
                     if(userInput == "$userInput") {
-                        sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} VERSIONROLLBACK=${userInput}" yml/django.yml --tags rollbackHelm"""
+                        sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml --extra-vars "ONEHOST=${hostserver} name_space=${NameSpace} number_release=${userInput}" yml/django.yml --tags rollbackHelm"""
                     } else {
                         echo "Action was aborted."
                     }
