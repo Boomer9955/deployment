@@ -34,7 +34,8 @@ stage('Building and push'){
 }
 
 stage('New version Helm chart'){
-    if(vHelmChart.toBoolean()){
+    //if(vHelmChart.toBoolean()){
+    if(CommandHelm.toChoice()){
         dir("${WORKSPACE}/chart_main"){
             git changelog: false, poll: false, credentialsId: "$env.credgitc", url: "$env.urlchart", branch: 'main'
             withCredentials([usernamePassword(credentialsId: 'helmchart', passwordVariable: 'gitpass', usernameVariable: 'gitlogin')]) {
@@ -111,7 +112,8 @@ stage('server'){
                 }else{
                     sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml -e 'ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} script_string="${helm_command}" name_space=${NameSpace}' yml/django.yml --tags ${tags}"""
                 }
-                if(vHelmChart.toBoolean()){
+                //if(vHelmChart.toBoolean()){
+                if(CommandHelm.toChoice()){
                     sleep 60
                     for(i=0;i<5;i++) {
                         sh "helm repo update"
