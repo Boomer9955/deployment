@@ -99,7 +99,7 @@ stage('server'){
             withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
                 sh "helm repo add helmcharts $chart_name"
                 if (RollbackHelmV){
-                    sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml -e 'ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} script_string="${helm_command}" name_space=${NameSpace}' yml/django.yml --tags CommandHelm"""
+                    sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml -e 'ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} script_string="helm history ${NameSpace}" name_space=${NameSpace}' yml/django.yml --tags CommandHelm"""
                     def userInput = input(id: 'Proceed1', message: 'Подтверждение отката',  parameters: [[$class: 'StringParameterDefinition', name: 'myparam', defaultValue: '']])
                     echo 'userInput: ' + userInput
                     
