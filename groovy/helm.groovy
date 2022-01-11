@@ -124,6 +124,7 @@ stage('server'){
                         }else{
                             sleep 30
                         }
+                    }
                 }else{
                     sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml -e 'ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} script_string="${helm_command}" name_space=${NameSpace}' yml/django.yml --tags ${tags}"""
                 }
