@@ -94,11 +94,10 @@ stage('New version Helm chart'){
 
 
 stage('server'){
-    sleep 60
     dir("${WORKSPACE}/config"){
         withCredentials([sshUserPrivateKey(credentialsId: 'myserverdjango', keyFileVariable: 'keyansible', passphraseVariable: '', usernameVariable: 'vagrant')]) {
             withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
-                sh "helm repo add helmcharts"
+                sh "helm repo add helmcharts $chart_name"
                 if (RollbackHelmV){
                     def userInput = input(id: 'Proceed1', message: 'Подтверждение отката',  parameters: [[$class: 'StringParameterDefinition', name: 'myparam', defaultValue: '']])
                     echo 'userInput: ' + userInput
@@ -109,6 +108,7 @@ stage('server'){
                         echo "Action was aborted."
                     }
                 }else{
+                    sleep 60
                     for(i=0;i<5;i++) {
                         sh "helm repo update"
                         sh "helm search repo helmcharts"
