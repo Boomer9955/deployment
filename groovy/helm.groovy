@@ -98,7 +98,7 @@ stage('server'){
         withCredentials([sshUserPrivateKey(credentialsId: 'myserverdjango', keyFileVariable: 'keyansible', passphraseVariable: '', usernameVariable: 'vagrant')]) {
             withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpassword', usernameVariable: 'dockeruser')]) {
                 sh "helm repo add helmcharts $chart_name"
-                if(RollbackHelmV){
+                if(RollbackHelmV.toBoolean()){
                     sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml -e 'ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} script_string="helm history ${NameSpace}" name_space=${NameSpace}' yml/django.yml --tags CommandHelm"""
                     def userInput = input(id: 'Proceed1', message: 'Подтверждение отката',  parameters: [[$class: 'StringParameterDefinition', name: 'myparam', defaultValue: '']])
                     echo 'userInput: ' + userInput
@@ -119,7 +119,7 @@ stage('server'){
                         r = sh script: "helm search repo mydjango --version '${BUILD_NUMBER}' | grep '${BUILD_NUMBER}'", returnStatus: true
                         println "$r"
                         if (r == 0){
-                            sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml -e 'ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} script_string="${helm_command}" name_space=${NameSpace}' yml/django.yml --tags helminstall"""
+                            sh """ansible-playbook --private-key ${keyansible} -u ${vagrant} -i yml/hosts.yml -e 'ONEHOST=${hostserver} build_number=${BUILD_NUMBER} docker_login=${dockeruser} docker_pass=${dockerpassword} name_space=${NameSpace}' yml/django.yml --tags helminstall"""
                             break
                         }else{
                             sleep 30
